@@ -15,9 +15,9 @@ import {
 
 const MergeTable = ({ width, height }) => {
   const [grid, setGrid] = useState(() => getInitialGrid(width, height));
-  const [clickedCell, setClickedCell] = useState();
-  const [clickedCellKey, setClickedCellKey] = useState();
-  const [hoveredCellKey, setHoveredCellKey] = useState();
+  const clickedCell = useRef();
+  const clickedCellKey = useRef();
+  const hoveredCellKey = useRef();
   const selectedArea = useRef();
 
   const mouseDownHandler = (event) => {
@@ -28,17 +28,17 @@ const MergeTable = ({ width, height }) => {
     const [x, y] = currentCell;
     const currentCellKey = getCellKey(y, x);
 
-    if (clickedCellKey === currentCellKey) return;
+    if (clickedCellKey.current === currentCellKey) return;
 
-    setClickedCell(currentCell);
-    setClickedCellKey(currentCellKey);
-    setHoveredCellKey(currentCellKey);
+    clickedCell.current = currentCell;
+    clickedCellKey.current = currentCellKey;
+    hoveredCellKey.current = currentCellKey;
 
     selectArea(currentCell);
   };
 
   const mouseMoveHandler = (event) => {
-    if (!clickedCell) return;
+    if (!clickedCell.current) return;
 
     const currentCell = getCellRectangle(event);
 
@@ -47,18 +47,18 @@ const MergeTable = ({ width, height }) => {
     const [x, y] = currentCell;
     const currentCellKey = getCellKey(y, x);
 
-    if (hoveredCellKey === currentCellKey) return;
+    if (hoveredCellKey.current === currentCellKey) return;
 
-    setHoveredCellKey(currentCellKey);
+    hoveredCellKey.current = currentCellKey;
 
-    selectArea(clickedCell, currentCell);
+    selectArea(clickedCell.current, currentCell);
   };
 
   useEffect(() => {
     const mouseUpHandler = () => {
-      setClickedCell();
-      setClickedCellKey();
-      setHoveredCellKey();
+      clickedCell.current = null;
+      clickedCellKey.current = null;
+      hoveredCellKey.current = null;
     };
 
     document.addEventListener("mouseup", mouseUpHandler);
